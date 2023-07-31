@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  flask_app:
+  weather_app:
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,21 +13,12 @@ services:
     environment:
       FLASK_APP: "run.py"
       FLASK_RUN_HOST: "0.0.0.0"
-      MONGO_URI: "mongodb://localhost:27018"
-      MONGO_USERNAME: "root"
-      MONGO_PASSWORD: "example"
-      MONGO_DBNAME: "mydatabase"
+      MONGO_URI: "mongodb://host.docker.internal:27017/weather"
+      MONGO_DBNAME: "weather"
+    command: sh -c "python populate_mongo_data.py && flask run --port 5001"
 
   mongo:
-    image: mongo
-    restart: always
-    hostname: localhost
+    image: mongo:latest
+    container_name: mongo
     ports:
-      - "27018:27017"
-    command: mongod
-    volumes:
-      - ./data:/data/db
-    environment:
-#      MONGO_INITDB_ROOT_USERNAME: root
-#      MONGO_INITDB_ROOT_PASSWORD: example
-      MONGO_INITDB_DATABASE: mydatabase
+      - "27017:27017"

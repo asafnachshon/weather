@@ -10,14 +10,14 @@ from flask import Flask, request
 app = Flask(__name__)
 
 
-@app.get('/avg_tmp_per_city_per_day')
+@app.route('/avg_tmp_per_city_per_day', methods=['GET'])
 def avg_tmp_per_city_per_day() -> dict:
     service = ForcastService()
     response: DailyAverageTemperatureResponseDto = service.get_daily_average_temperature()
     return response.to_dict()
 
 
-@app.get('/lowest_humid')
+@app.route('/lowest_humid', methods=['GET'])
 def lowest_humid() -> dict:
     service = ForcastService()
     response: GetLowestHumidityPointResponseDto = service.get_lowest_humid_point()
@@ -33,4 +33,4 @@ def feels_like_rank() -> dict:
             desc=params.get('order_dir', 'desc') == 'desc',
         ),
     )
-    return response.to_dict()
+    return response.to_dict()['items']
