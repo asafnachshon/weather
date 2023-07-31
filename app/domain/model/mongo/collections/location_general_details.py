@@ -6,3 +6,10 @@ class LocationGeneralDetails(AbstractCollection):
 
     location_id = 'location_id'
     name = 'name'
+
+    __indexes__ = [
+        dict(
+            keys=[(location_id, 1)],
+            name='location_id_1'
+        ),
+    ]

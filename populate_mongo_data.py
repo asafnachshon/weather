@@ -7,12 +7,11 @@ import requests
 from app.domain.model import mongo as db
 from app.domain.model.location_general_details import LocationGeneralDetails
 from bson import json_util
+from infrastructure.consts import CITIES, DATETIME_FORMAT, OPEN_WEATHER_HOST
 from infrastructure.mongo_client import get_mongo
 from requests import Response
 
-HOST = 'http://api.openweathermap.org'
 API_KEY = '41573e0321bd6310e36679d8f3389a80'
-DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
 @dataclasses.dataclass
@@ -59,7 +58,7 @@ class FiveDaysCityForecast:
 
 def _get_request(path: str, params: dict):
     params['appid'] = API_KEY
-    response: Response = requests.get(url=f'{HOST}/{path}', params=params)
+    response: Response = requests.get(url=f'{OPEN_WEATHER_HOST}/{path}', params=params)
     return json_util.loads(response.content)
 
 
@@ -115,18 +114,27 @@ def _save_city_forecasts_for(request: FiveDaysCityForecast):
     )
 
 
-def clear_collections():
-    get_mongo(collection=db.LocationGeneralDetails).delete_many({})
-    get_mongo(collection=db.Forecasts).delete_many({})
-
-
 def save_city_forecasts_data_to_mongodb(city: str) -> None:
     city_forecasts: FiveDaysCityForecast = _get_city_five_days_three_hour_forecast(city=city)
     _save_to_location_general_details_collection(request=city_forecasts.city)
     _save_city_forecasts_for(request=city_forecasts)
 
 
+def drop_collections():
+    get_mongo(collection=db.LocationGeneralDetails).drop()
+    get_mongo(collection=db.Forecasts).drop()
+
+
+def create_collections_indexes():
+    for db_collection in [db.Forecasts, db.LocationGeneralDetails]:
+        if db_collection.__indexes__:
+            collection = get_mongo(collection=db_collection)
+            for index in db_collection.__indexes__:
+                collection.create_index(**index)
+
+
 if __name__ == '__main__':
-    clear_collections()
-    for city in ['Jerusalem', 'Haifa', 'Tel Aviv', 'Eilat', 'Tiberias']:
-        save_city_forecasts_data_to_mongodb(city=city)
+    drop_collections()
+    create_collections_indexes()
+    for city_name in CITIES:
+        save_city_forecasts_data_to_mongodb(city=city_name)

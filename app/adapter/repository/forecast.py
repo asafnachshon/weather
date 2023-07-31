@@ -5,10 +5,9 @@ import dataclasses
 
 from app.domain.model import mongo as db
 from app.domain.model.forecast import Forecast
+from infrastructure.consts import DATE_FORMAT
 from infrastructure.mongo_client import get_mongo
 from typing import Iterable
-
-DATE_FORMAT = '%Y-%m-%d'
 
 
 @dataclasses.dataclass

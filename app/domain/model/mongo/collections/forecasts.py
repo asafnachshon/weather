@@ -9,3 +9,14 @@ class Forecasts(AbstractCollection):
     location_id = 'location_id'
     temp = 'temp'
     time = 'time'
+
+    __indexes__ = [
+        dict(
+            keys=[(humidity, 1)],
+            name='humidity_1',
+        ),
+        dict(
+            keys=[(location_id, 1), (time, -1)],
+            name='location_id_1_time_desc',
+        ),
+    ]

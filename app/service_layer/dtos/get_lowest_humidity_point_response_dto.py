@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 import datetime as dt
 
-DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+from infrastructure.consts import DATETIME_FORMAT
 
 
 @dataclasses.dataclass

@@ -5,6 +5,7 @@ import abc
 
 class AbstractCollection(abc.ABC):
     __collection_name__: str | None = None
+    __indexes__: list[dict] | None = None
 
     id: str = '_id'
 
